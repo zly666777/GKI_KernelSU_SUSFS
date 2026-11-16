@@ -1660,6 +1660,11 @@ jobs:
           cat >> "$DEFCONFIG" << 'EOF'
           CONFIG_TMPFS_XATTR=y
           CONFIG_TMPFS_POSIX_ACL=y
+          CONFIG_MODVERSIONS=n
+          CONFIG_MODULE_SIG_FORCE=n
+          CONFIG_MODULE_FORCE_LOAD=y
+          CONFIG_TRIM_UNUSED_KSYMS=n
+          CONFIG_UNUSED_SYMBOLS=y
           EOF
 
           # 禁用KSU 时源码里没有 KernelSU，CONFIG_KSU 不存在，写入会被 bazel 的 defconfig 检查拒绝
