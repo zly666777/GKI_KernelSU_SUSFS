@@ -1666,7 +1666,16 @@ jobs:
           CONFIG_TRIM_UNUSED_KSYMS=n
           CONFIG_UNUSED_SYMBOLS=y
           EOF
+          # 强制修改最终生成的配置文件，防止 Kconfig 覆盖我们的设置
+          sed -i 's/CONFIG_MODVERSIONS=y/# CONFIG_MODVERSIONS is not set/g' out/.config || true
+          sed -i 's/CONFIG_MODULE_SIG_FORCE=y/# CONFIG_MODULE_SIG_FORCE is not set/g' out/.config || true
+          sed -i 's/# CONFIG_MODULE_FORCE_LOAD is not set/CONFIG_MODULE_FORCE_LOAD=y/g' out/.config || true
+          sed -i 's/CONFIG_TRIM_UNUSED_KSYMS=y/# CONFIG_TRIM_UNUSED_KSYMS is not set/g' out/.config || true
+          sed -i 's/# CONFIG_UNUSED_SYMBOLS is not set/CONFIG_UNUSED_SYMBOLS=y/g' out/.config || true
 
+          # 打印一下修改结果，方便你在日志里确认
+          echo "=== 检查修改后的配置 ==="
+          grep -E "CONFIG_MODVERSIONS|CONFIG_MODULE_SIG_FORCE|CONFIG_MODULE_FORCE_LOAD" out/.config || true
           # 禁用KSU 时源码里没有 KernelSU，CONFIG_KSU 不存在，写入会被 bazel 的 defconfig 检查拒绝
           if [ "${{ inputs.ksu_mode }}" != "禁用KSU" ]; then
             echo "CONFIG_KSU=y" >> "$DEFCONFIG"
